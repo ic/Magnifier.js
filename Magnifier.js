@@ -126,6 +126,19 @@ var Magnifier = function (evt, options) {
 
             return result;
         },
+        evtOrFallback = function (evtName, fallbackName) {
+          var result = fallbackName;
+          var base = document.getElementsByTagName("html")[0];
+          if (base !== undefined) {
+            var element = document.createElement("div");
+            base.appendChild(element);
+            if (element['on' + evtName] !== undefined) {
+              result = evtName;
+            }
+            base.removeChild(element);
+          }
+          return result;
+        },
         createLens = function (thumb, idx) {
             var lens = document.createElement('div');
 
@@ -288,7 +301,7 @@ var Magnifier = function (evt, options) {
 
                 if (curData.zoomAttached === false) {
                     if (curData.zoomable !== undefined && curData.zoomable === true) {
-                        evt.attach('mousewheel', curLens, zoomInOut);
+                        evt.attach(evtOrFallback('wheel', 'mousewheel'), curLens, zoomInOut);
 
                         if (window.addEventListener) {
                             curLens.addEventListener('DOMMouseScroll', function (e) {
